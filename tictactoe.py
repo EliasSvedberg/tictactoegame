@@ -30,6 +30,16 @@ class Game:
     def set_fps(self, fps):
         self.fps = fps
 
+    def set_imgs(self, xImg, oImg):
+        #Loading images
+        self.xImg = self.pygame.image.load(xImg)
+        self.oImg = self.pygame.image.load(oImg)
+
+        #resizing images
+        self.xImg = self.pygame.transform.scale(self.xImg, (80,80))
+        self.oImg = self.pygame.transform.scale(self.oImg, (80,80))
+
+
     def draw_board(self):
         #Drawing background
         self.screen.fill(self.boardColor)
@@ -86,7 +96,8 @@ class Game:
         self.clock.tick(fps)
 
 game = Game(pygame, sys)
-game.set_screen(640, 480)
+game.set_screen(400, 400)
 game.set_board_style((255,255,255),(0,0,0))
 game.set_fps(30)
+game.set_imgs("x.png", "o.png")
 game.game_loop()
