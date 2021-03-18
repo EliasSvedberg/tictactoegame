@@ -31,23 +31,26 @@ class Game:
         self.fps = fps
 
     def draw_board(self):
-        # Drawing background
+        #Drawing background
         self.screen.fill(self.boardColor)
-        # Drawing vertical lines
+        #Drawing vertical lines
         self.pygame.draw.line(self.screen,self.lineColor,
                             (self.width/3,0),
                             (self.width/3, self.height),7)
         self.pygame.draw.line(self.screen,self.lineColor,
                             (self.width/3*2,0),(self.width/3*2,
                              self.height),7)
-        # Drawing horizontal lines
+        #Drawing horizontal lines
         self.pygame.draw.line(self.screen,self.lineColor,
                             (0,self.height/3),
                             (self.width, self.height/3),7)
         self.pygame.draw.line(self.screen,self.lineColor,
                             (0,self.height/3*2),
                             (self.width, self.height/3*2),7)
-        # Update screen
+
+        #Draw X and O
+
+        #Update screen
         self.pygame.display.update()
 
     def create_ttt_array(self):
@@ -55,9 +58,12 @@ class Game:
         return [[self.Square(r, c) for c in range(3)] for r in range(3)]
 
     def user_click(self):
+        #Get mouse pos and convert to rows/cols
         mPosX,mPosY = self.pygame.mouse.get_pos()
         r = floor(mPosY/self.height)
         c = floor(mPosY/self.width)
+
+        #Set square to clicked
         for sq in self.tttArray:
             if (sq.row,sq.col) == (r,c):
                 sq.clicked = True
@@ -65,6 +71,7 @@ class Game:
 
     def game_loop(self):
         self.draw_board()
+        #Game loop
         while (True):
             for event in self.pygame.event.get():
                 if event.type == self.pygame.QUIT: #The user closed the window!
@@ -83,21 +90,3 @@ game.set_screen(640, 480)
 game.set_board_style((255,255,255),(0,0,0))
 game.set_fps(30)
 game.game_loop()
-
-
-
-
-
-#
-# def game_loop():
-#
-#     while (True):
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT: #The user closed the window!
-#                 pygame.quit()
-#                 sys.exit() #Stop running
-#         # Logic goes here
-#
-#     #set frames/second
-#     pygame.display.update()
-#     clock.tick(fps)
