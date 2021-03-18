@@ -9,6 +9,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.winner = None
         self.draw = False
+        self.activePlayer = "x"
 
     class Square:
         def __init__(self, r, c, xPos, yPos):
@@ -17,6 +18,7 @@ class Game:
             self.xPos = xPos
             self.yPos = yPos
             self.clicked = False
+            self.clickedBy = None
 
 
     def set_screen(self, w, h, lw):
@@ -65,9 +67,14 @@ class Game:
         #Draw X and O
         for r in range(3):
             for c in range(3):
-                print(r, c, self.tttArray[r][c].clicked)
-                if (self.tttArray[r][c].clicked):
-                    self.screen.blit(self.xImg, (self.tttArray[r][c].xPos, self.tttArray[r][c].yPos))
+                if self.tttArray[r][c].clicked:
+                    if self.tttArray[r][c].clickedBy == "x":
+                        self.screen.blit(self.xImg,
+                        (self.tttArray[r][c].xPos, self.tttArray[r][c].yPos))
+                    else:
+                        self.screen.blit(self.oImg,
+                        (self.tttArray[r][c].xPos, self.tttArray[r][c].yPos))
+
         #Update screen
         self.pygame.display.update()
 
@@ -81,6 +88,12 @@ class Game:
         return [[self.Square(r, c, (xPos+c*(self.width/3)),
         (yPos+r*(self.height/3)) ) for c in range(3)] for r in range(3)]
 
+    def change_player(self):
+        if self.activePlayer == "x":
+            self.activePlayer = "o"
+        else:
+            self.activePlayer = "x"
+
     def user_click(self):
         #Get mouse pos and convert to rows/cols
         mPosX,mPosY = self.pygame.mouse.get_pos()
@@ -93,6 +106,9 @@ class Game:
             for c in range(3):
                 if (self.tttArray[r][c].row, self.tttArray[r][c].col) == (mRow, mCol):
                     self.tttArray[r][c].clicked = True
+                    self.tttArray[r][c].clickedBy = self.activePlayer
+                    #change player
+                    self.change_player()
 
 
     def game_loop(self):
