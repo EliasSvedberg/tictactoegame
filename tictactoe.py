@@ -1,7 +1,9 @@
 import pygame as pygame, sys
 import math
+import time
 
 class Game:
+
     def __init__(self, pygame, sys):
         self.pygame = pygame
         self.sys = sys
@@ -12,6 +14,7 @@ class Game:
         self.activePlayer = "x"
 
     class Square:
+
         def __init__(self, r, c, xPos, yPos):
             self.row = r
             self.col = c
@@ -19,7 +22,6 @@ class Game:
             self.yPos = yPos
             self.clicked = False
             self.clickedBy = None
-
 
     def set_screen(self, w, h, lw):
         self.width = w
@@ -45,7 +47,6 @@ class Game:
         self.imgHeight = int(self.height/5)
         self.xImg = self.pygame.transform.scale(self.xImg, (self.imgWidth, self.imgHeight))
         self.oImg = self.pygame.transform.scale(self.oImg, (self.imgWidth, self.imgHeight))
-
 
     def draw_board(self):
         #Drawing background
@@ -78,7 +79,6 @@ class Game:
         #Update screen
         self.pygame.display.update()
 
-
     def create_ttt_array(self):
         #Set x,y cordinates for each img
         xPos = (self.width/3 - self.imgWidth)/2
@@ -99,17 +99,58 @@ class Game:
         mPosX,mPosY = self.pygame.mouse.get_pos()
         mRow = math.floor(mPosY/(self.height/3))
         mCol = math.floor(mPosX/(self.width/3))
-        print(mPosX, mPosY)
-        print(mRow,mCol)
         #Set square to clicked
         for r in range(3):
             for c in range(3):
                 if (self.tttArray[r][c].row, self.tttArray[r][c].col) == (mRow, mCol):
-                    self.tttArray[r][c].clicked = True
-                    self.tttArray[r][c].clickedBy = self.activePlayer
-                    #change player
-                    self.change_player()
+                    if self.tttArray[r][c].clicked == False:
+                        self.tttArray[r][c].clicked = True
+                        self.tttArray[r][c].clickedBy = self.activePlayer
+                        #change player
+                        self.change_player()
 
+    def check_win_or_draw(self):
+        #Row wins
+        for r in range(3):
+            if (self.tttArray[r][0].clickedBy == self.tttArray[r][1].clickedBy
+             == self.tttArray[r][2].clickedBy):
+                self.winner =  self.tttArray[r][0].clickedBy
+                break
+        #Column wins
+        for c in range(3):
+            if (self.tttArray[0][c].clickedBy == self.tttArray[1][c].clickedBy
+             == self.tttArray[2][c].clickedBy):
+                self.winner =  self.tttArray[0][c].clickedBy
+                break
+        #Left to right diagonal win
+        if (self.tttArray[0][0].clickedBy == self.tttArray[1][1].clickedBy
+         == self.tttArray[2][2].clickedBy):
+            self.winner =  self.tttArray[0][0].clickedBy
+        #Right to left diagonal win
+        if (self.tttArray[0][2].clickedBy == self.tttArray[1][1].clickedBy
+         == self.tttArray[2][0].clickedBy):
+            self.winner =  self.tttArray[0][2].clickedBy
+
+        #Create clicked arr
+        clicked = [[c.clicked for c in r] for r in self.tttArray]
+        #Check draw
+        if(all([all(row) for row in clicked]) and self.winner is None):
+            self.draw = True
+
+    def game_finished(self):
+        time.sleep(3)
+        if self.winner:
+            message = f"The winner was: {self.winner}"
+        else:
+            message = "The game was a Draw"
+
+        font = self.pygame.font.Font(None, 30)
+        text = font.render(message,1, (0,0,0))
+        # copy the rendered message onto the board
+        self.screen.fill (self.boardColor)
+        text_rect = text.get_rect(center=(self.width/2, 200))
+        self.screen.blit(text, text_rect)
+        self.pygame.display.update()
 
     def game_loop(self):
         self.tttArray = self.create_ttt_array()
@@ -123,8 +164,9 @@ class Game:
                 elif event.type == self.pygame.MOUSEBUTTONDOWN:
                     self.user_click()
                     self.draw_board()
+                    self.check_win_or_draw()
                     if (self.winner or self.draw):
-                        endgame = 1
+                        self.game_finished()
         #set frames/second
         self.pygame.display.update()
         self.clock.tick(fps)
