@@ -41,7 +41,6 @@ class Game:
         #Loading images
         self.xImg = self.pygame.image.load(xImg)
         self.oImg = self.pygame.image.load(oImg)
-
         #resizing images
         self.imgWidth = int(self.width/5)
         self.imgHeight = int(self.height/5)
@@ -75,7 +74,6 @@ class Game:
                     else:
                         self.screen.blit(self.oImg,
                         (self.tttArray[r][c].xPos, self.tttArray[r][c].yPos))
-
         #Update screen
         self.pygame.display.update()
 
